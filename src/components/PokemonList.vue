@@ -1,7 +1,10 @@
 <template>
   <div class="pokemon-list">
     <h1>Pokedex</h1>
-    <div class="toolbar">
+    <div
+      v-if="width > 1000"
+      class="toolbar"
+    >
       <input
         v-model="search"
         placeholder="Filter..."
@@ -22,6 +25,8 @@
 import pokemons from '@/assets/pokemons.json'
 import PokemonListItem from './PokemonListItem.vue'
 
+const SEARCH_LOCAL_NAME = 'pokedex.search'
+
 export default {
   components: {
     PokemonListItem
@@ -30,7 +35,8 @@ export default {
   data () {
     return {
       pokemons,
-      search: ''
+      search: '',
+      width: window.innerWidth
     }
   },
 
@@ -49,8 +55,40 @@ export default {
         pokemon => regex.test(pokemon.name)
       )
     }
+  },
+
+  watch: {
+    search (value, oldValue) {
+      localStorage.setItem(SEARCH_LOCAL_NAME, value)
+    }
+  },
+
+  created () {
+    this.loadSearch()
+    window.addEventListener('resize', this.onResize)
+  },
+
+  destroyed () {
+    window.removeEventListener('resize', this.onResize)
+  },
+
+  methods: {
+    loadSearch () {
+      const result = localStorage.getItem(SEARCH_LOCAL_NAME)
+      if (result != null) {
+        this.search = result
+      }
+    },
+
+    onResize () {
+      this.width = window.innerWidth
+    }
   }
 }
+
+window.addEventListener('unload', () => {
+  localStorage.removeItem(SEARCH_LOCAL_NAME)
+})
 </script>
 
 <style lang="stylus">
