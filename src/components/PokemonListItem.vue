@@ -1,5 +1,13 @@
 <template>
-  <div class="pokemon-list-item">
+  <router-link
+    class="pokemon-list-item"
+    :to="{
+      name: 'pokemon-details',
+      params: {
+        num: pokemon.id
+      }
+    }"
+  >
     <div class="name">
       {{ pokemon.name }}
     </div>
@@ -8,7 +16,7 @@
       :alt="`Image de ${pokemon.name}`"
       class="preview"
     />
-  </div>
+  </router-link>
 </template>
 
 <script>

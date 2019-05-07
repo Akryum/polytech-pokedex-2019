@@ -7,8 +7,9 @@
   >
     <img
       v-bind="$attrs"
+      :src="src"
       class="image"
-      @load="loaded = true"
+      @load="onLoad"
     >
 
     <transition name="fade">
@@ -20,12 +21,28 @@
 </template>
 
 <script>
+const loadedImages = new Set()
+
 export default {
   inheritAttrs: false,
 
+  props: {
+    src: {
+      type: String,
+      required: true
+    }
+  },
+
   data () {
     return {
-      loaded: false
+      loaded: loadedImages.has(this.src)
+    }
+  },
+
+  methods: {
+    onLoad () {
+      this.loaded = true
+      loadedImages.add(this.src)
     }
   }
 }
