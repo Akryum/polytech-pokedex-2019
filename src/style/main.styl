@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i')
+@import 'imports'
+@import 'transitions'
+
+body
+  margin 0
+
+#app
+  font-family 'Lato', 'Avenir', Helvetica, Arial, sans-serif
+  -webkit-font-smoothing antialiased
+  -moz-osx-font-smoothing grayscale
+  color #2c3e50
+
+h1
+  font-weight lighter
+  color $color-primary
+  margin $padding 0
+
+button,
+input
+  font-size inherit
+  font-family inherit
+  border-radius $br
+
+button
+  background $color-primary
+  color white
+  border none
+  padding $padding
+  &:hover
+    background $color-secondary
+    color black
+
+input
+  background white
+  border solid 1px $color-grey
+  padding ($padding - 2px)
+  &:focus
+    border-color $color-primary
