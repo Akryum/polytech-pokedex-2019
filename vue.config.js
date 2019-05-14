@@ -5,5 +5,12 @@ module.exports = {
         import: ['~@/style/imports']
       }
     }
+  },
+
+  pluginOptions: {
+    apollo: {
+      enableMocks: true,
+      enableEngine: true
+    }
   }
 }
