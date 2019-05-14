@@ -40,6 +40,10 @@ export default {
         p => p.id === this.id
       )
     }
+  },
+
+  created () {
+    console.log(this.$route.params.id)
   }
 }
 </script>
