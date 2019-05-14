@@ -2,17 +2,41 @@
 scalar JSON
 scalar Upload
 
+type Pokemon {
+  id: Int!
+  name: String!
+  image: String!
+  habitat: String
+  attack: Int
+  defense: Int
+  types: [PokemonType]
+}
 
+type PokemonType {
+  name: String!
+}
 
 type Query {
   # Test query with a parameter
   hello(name: String): String!
+  """
+  List of pokemons.
+  """
+  pokemons: [Pokemon]
 
+  """
+  Retrieve a pokemon.
+  """
+  pokemon(id: Int!): Pokemon
+}
+
+input EditPokemonInput {
+  id: Int!
+  habitat: String
 }
 
 type Mutation {
-  myMutation: String!
-
+  editPokemon(input: EditPokemonInput!): Pokemon
 }
 
 type Subscription {

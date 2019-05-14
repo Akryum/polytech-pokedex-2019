@@ -1,29 +1,28 @@
 import GraphQLJSON from 'graphql-type-json'
-
+import { getPokemons, getPokemonById, updatePokemon } from './connectors/pokemon'
 
 export default {
   JSON: GraphQLJSON,
 
-
+  Pokemon: {
+    image: (pokemon, args, context) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`
+    // 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + pokemon.id + '.png'
+  },
 
   Query: {
-    hello: (root, { name }) => `Hello ${name || 'World'}!`,
-
+    pokemons: (root, args, context) => getPokemons(context),
+    pokemon: (root, { id }, context) => getPokemonById(id, context)
+    // pokemon: (root, args, context) => getPokemonById(args.id, context)
   },
 
   Mutation: {
-    myMutation: (root, args, context) => {
-      const message = 'My mutation completed!'
-      context.pubsub.publish('hey', { mySub: message })
-      return message
-    },
-
+    editPokemon: (root, { input }, context) => updatePokemon(input, context)
   },
 
   Subscription: {
     mySub: {
-      subscribe: (parent, args, { pubsub }) => pubsub.asyncIterator('hey'),
-    },
+      subscribe: (parent, args, { pubsub }) => pubsub.asyncIterator('hey')
+    }
 
-  },
+  }
 }

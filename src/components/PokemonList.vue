@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import pokemons from '@/assets/pokemons.json'
 import PokemonListItem from './PokemonListItem.vue'
+import gql from 'graphql-tag'
 
 const SEARCH_LOCAL_NAME = 'pokedex.search'
 
@@ -34,10 +34,21 @@ export default {
 
   data () {
     return {
-      pokemons,
       search: '',
       width: window.innerWidth
     }
+  },
+
+  apollo: {
+    pokemons: gql`
+      query Pokemons {
+        pokemons {
+          id
+          name
+          image
+        }
+      }
+    `
   },
 
   computed: {

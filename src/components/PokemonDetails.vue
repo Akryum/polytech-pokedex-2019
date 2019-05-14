@@ -1,6 +1,9 @@
 <template>
   <div class="pokemon-details">
-    <template v-if="pokemon">
+    <BaseLoading
+      v-if="$apollo.loading"
+    />
+    <template v-else-if="pokemon">
       <div class="id">
         <span class="symbol">#</span>
         <span class="number">{{ pokemon.id }}</span>
@@ -13,6 +16,15 @@
         :alt="`Image of ${pokemon.name}`"
         class="preview"
       />
+      <div>
+        Habitat: <b>{{ pokemon.habitat }}</b>
+      </div>
+
+      <div class="actions">
+        <button @click="showEdit = true">
+          Edit
+        </button>
+      </div>
     </template>
     <div
       v-else
@@ -20,13 +32,34 @@
     >
       Pokemon not found
     </div>
+
+    <BaseModal
+      v-if="showEdit"
+      :title="`Edit Pokemon #${id}`"
+      @close="showEdit = false"
+    >
+      <template #title>
+        Edit Pokemon #{{ id }}
+      </template>
+
+      <EditPokemon
+        :pokemon="pokemon"
+        @done="showEdit = false"
+      />
+    </BaseModal>
   </div>
 </template>
 
 <script>
-import pokemons from '@/assets/pokemons.json'
+import EditPokemon from './EditPokemon.vue'
+
+import gql from 'graphql-tag'
 
 export default {
+  components: {
+    EditPokemon
+  },
+
   props: {
     id: {
       type: Number,
@@ -34,11 +67,29 @@ export default {
     }
   },
 
-  computed: {
-    pokemon () {
-      return pokemons.find(
-        p => p.id === this.id
-      )
+  data () {
+    return {
+      showEdit: false
+    }
+  },
+
+  apollo: {
+    pokemon: {
+      query: gql`
+        query Pokemon ($id: Int!) {
+          pokemon (id: $id) {
+            id
+            name
+            image
+            habitat
+          }
+        }
+      `,
+      variables () {
+        return {
+          id: this.id
+        }
+      }
     }
   },
 
@@ -68,4 +119,7 @@ export default {
   height @width
   >>> .image
     image-rendering pixelated
+
+.actions
+  margin-top 12px
 </style>
