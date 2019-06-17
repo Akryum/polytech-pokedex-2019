@@ -11,6 +11,15 @@ describe('PokemonDetails', () => {
       params: {
         id: 2
       }
+    },
+    $apollo: {
+      loading: false
+    },
+    pokemon: {
+      id: 2,
+      name: 'Ivysaur',
+      image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png',
+      habitat: 'forest'
     }
   }
 
