@@ -10,7 +10,7 @@ export default {
   },
 
   Query: {
-    pokemons: (root, args, context) => getPokemons(context),
+    pokemons: (root, args, context) => getPokemons(args, context),
     pokemon: (root, { id }, context) => getPokemonById(id, context)
     // pokemon: (root, args, context) => getPokemonById(args.id, context)
   },

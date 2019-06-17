@@ -22,7 +22,7 @@ type Query {
   """
   List of pokemons.
   """
-  pokemons: [Pokemon]
+  pokemons(filter: String, page: Int): [Pokemon]
 
   """
   Retrieve a pokemon.

@@ -13,10 +13,19 @@
 
     <div class="pokemons">
       <PokemonListItem
-        v-for="pokemon in filteredPokemons"
+        v-for="pokemon in pokemons"
         :key="pokemon.id"
         :pokemon="pokemon"
       />
+    </div>
+
+    <div class="bottom-actions">
+      <button
+        v-if="showLoadMore"
+        @click="loadMore()"
+      >
+        Load more
+      </button>
     </div>
   </div>
 </template>
@@ -27,6 +36,8 @@ import gql from 'graphql-tag'
 
 const SEARCH_LOCAL_NAME = 'pokedex.search'
 
+let page = 0
+
 export default {
   components: {
     PokemonListItem
@@ -35,42 +46,40 @@ export default {
   data () {
     return {
       search: '',
+      showLoadMore: true,
       width: window.innerWidth
     }
   },
 
   apollo: {
-    pokemons: gql`
-      query Pokemons {
-        pokemons {
-          id
-          name
-          image
+    pokemons: {
+      query: gql`
+        query Pokemons ($filter: String, $page: Int) {
+          pokemons (filter: $filter, page: $page) {
+            id
+            name
+            image
+          }
         }
+      `,
+      variables () {
+        return {
+          filter: this.search,
+          page: 0
+        }
+      },
+      throttle: 500,
+      result ({ data: { pokemons } }) {
+        this.showLoadMore = pokemons.length >= 20
       }
-    `
-  },
-
-  computed: {
-    filteredPokemons () {
-      if (!this.search) {
-        return this.pokemons
-      }
-      // Handle spaces
-      const pattern = this.search.trim().replace(/\s+/g, '|')
-      // console.log(pattern)
-      // Search regex which is case insensitive
-      const regex = new RegExp(pattern, 'i')
-      // Filter
-      return this.pokemons.filter(
-        pokemon => regex.test(pokemon.name)
-      )
     }
   },
 
   watch: {
     search (value, oldValue) {
       localStorage.setItem(SEARCH_LOCAL_NAME, value)
+      page = 0
+      this.showLoadMore = true
     }
   },
 
@@ -93,6 +102,26 @@ export default {
 
     onResize () {
       this.width = window.innerWidth
+    },
+
+    async loadMore () {
+      page++
+
+      await this.$apollo.queries.pokemons.fetchMore({
+        variables: {
+          filter: this.search,
+          page
+        },
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          this.showLoadMore = fetchMoreResult.pokemons.length >= 20
+          return {
+            pokemons: [
+              ...previousResult.pokemons,
+              ...fetchMoreResult.pokemons
+            ]
+          }
+        }
+      })
     }
   }
 }
@@ -114,4 +143,9 @@ window.addEventListener('unload', () => {
 
 .toolbar
   margin-bottom $padding
+
+.bottom-actions
+  display flex
+  justify-content center
+  margin-top 12px
 </style>
